@@ -88,6 +88,23 @@ public class Template implements Iterable<Template.Pair> {
 		mSchema.register(mTbl, this);
 	}
 	
+	private String getFromDb(String col) {
+		String rv = null;
+		if ( mCols.contains(col) ) {
+			rv = mCursor.getString(col);
+		}
+		return rv;
+	}
+
+	private void setCursor(Cursor c) {
+		mCursor = new MaybeCursor(c);
+		mCursor.moveToFirst();
+	}
+
+	protected void resetCursor() {
+		setCursor(mSchema.getCursorById(mTbl, getId()));
+	}
+
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
@@ -98,14 +115,6 @@ public class Template implements Iterable<Template.Pair> {
 		return updates.containsKey(col) ? updates.get(col) : getFromDb(col);
 	}
 
-	private String getFromDb(String col) {
-		String rv = null;
-		if ( mCols.contains(col) ) {
-			rv = mCursor.getString(col);
-		}
-		return rv;
-	}
-	
 	public void set(String col, String val){
 		if ( mCols.contains(col) ) {
 			updates.put(col, val);
@@ -123,15 +132,6 @@ public class Template implements Iterable<Template.Pair> {
 			setCursor(mSchema.create(mTbl, updates));
 		}
 		updates.clear();
-	}
-
-	private void setCursor(Cursor c) {
-		mCursor = new MaybeCursor(c); 
-		mCursor.moveToFirst();
-	}
-
-	protected void resetCursor() {
-		setCursor(mSchema.getCursorById(mTbl, getId()));
 	}
 
 	public Iterator<Pair> iterator() {
