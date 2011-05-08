@@ -68,27 +68,17 @@ public class Schema {
 		return vals;
 	}
 
-	public void table(String tbl, String... ss) {
-	}
 
-	public Template get(String tbl) {
-		return makeTemplate(tbl, null);
-	}
-
-	public Template get(String tbl, int id) {
-		return makeTemplate(tbl, getCursorById(tbl, id));
-	}
-
-	public void save(String tbl, HashMap<String, String> updates, int id) {
+	void save(String tbl, HashMap<String, String> updates, int id) {
 		mDb.update(tbl, contentValuesFromUpdates(updates), "_id=?", new String[] { Integer.toString(id) });
 		resetTemplates(tbl);
 	}
 
-	public Cursor create(String tbl, HashMap<String, String> updates) {
+	Cursor create(String tbl, HashMap<String, String> updates) {
 		return getCursorById(tbl, (int) mDb.insert(tbl, null, contentValuesFromUpdates(updates)));
 	}
 	
-	public void register(String mTbl, Template template) {
+	void register(String mTbl, Template template) {
 		List<Template> templates = null;
 		if ( !mTemplates .containsKey(mTbl) ) {
 			templates = new ArrayList<Template>();
@@ -101,10 +91,21 @@ public class Schema {
 		}
 	}
 
-	public void unregister(String mTbl, Template template) {
+	void unregister(String mTbl, Template template) {
 		List<Template> templates = mTemplates.get(mTbl);
 		if ( null != templates ) {
 			templates.remove(template);
 		}
+	}
+
+	public void table(String tbl, String... ss) {
+	}
+
+	public Template get(String tbl) {
+		return makeTemplate(tbl, null);
+	}
+
+	public Template get(String tbl, int id) {
+		return makeTemplate(tbl, getCursorById(tbl, id));
 	}
 }
