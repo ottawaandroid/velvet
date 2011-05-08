@@ -10,7 +10,7 @@ import android.test.InstrumentationTestCase;
 import ca.ottawaandroid.velvet.Schema;
 import ca.ottawaandroid.velvet.Template;
 
-public class SchemaTest extends InstrumentationTestCase {
+public class TemplateTests extends InstrumentationTestCase {
 	private static final String TESTING_DATABASE = "velvet.db.testing";
 	private SQLiteDatabase mDb;
     private Schema mSchema;
