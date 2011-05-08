@@ -19,50 +19,6 @@ public class Template implements Iterable<Template.Pair> {
 		}
 	}
 	
-	private static class MaybeCursor {
-		private Cursor mC;
-
-		public MaybeCursor(Cursor c) {
-			mC = c;
-		}
-
-		public void close() {
-			if ( null != mC ) {
-				mC.close();
-			}
-		}
-
-		public void moveToFirst() {
-			if ( null != mC ) {
-				mC.moveToFirst();
-			}
-		}
-
-		public String getString(int i) {
-			return (null != mC) ? mC.getString(i) : "";
-		}
-		
-		@Override
-		protected void finalize() throws Throwable {
-			super.finalize();
-			close();
-		}
-
-		public String getString(String col) {
-			String rv = "";
-			if( mC != null ) {
-				int i = -1;
-				i = mC.getColumnIndex(col);
-				rv = (i >= 0) ? mC.getString(i) : ""; 
-			}
-			return rv;
-		}
-
-		public boolean isValid() {
-			return (null != mC);
-		}
-	}
-
 	private class LocalIterator implements Iterator<Pair> {
 		private int mI = 0;
 

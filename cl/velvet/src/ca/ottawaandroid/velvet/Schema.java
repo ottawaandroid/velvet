@@ -38,19 +38,23 @@ public class Schema {
 	}
 
 	private ArrayList<String> lookupTableColumns(String tbl) {
-		ArrayList<String> rv = null;
-		Cursor pc = mDb.rawQuery("PRAGMA table_info(" + tbl + ")", null);
-		if ( pc.getCount() > 0 ) {
-			rv = new ArrayList<String>();
+        class ColumnsCallbacks extends MaybeCursor.EachCallbacks {
+            public ArrayList<String> results;
 
-			pc.moveToFirst();
-			while ( !pc.isAfterLast() ) {
-				rv.add(pc.getString(1));
-				pc.moveToNext();
-			}
-		}
-		pc.close();
-		return rv;
+            @Override
+            public void before() {
+                results = new ArrayList<String>();
+            }
+
+            @Override
+            public void next(MaybeCursor c) {
+                results.add(c.getString(1));
+            }
+        };
+
+        ColumnsCallbacks cb = new ColumnsCallbacks();
+        new MaybeCursor(mDb.rawQuery("PRAGMA table_info(" + tbl + ")", null)).each(cb);
+		return cb.results;
 	}
 
 	private void resetTemplates(String tbl) {
