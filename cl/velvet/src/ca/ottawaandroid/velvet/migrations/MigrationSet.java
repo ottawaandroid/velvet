@@ -34,8 +34,18 @@ public class MigrationSet {
     public void apply(SQLiteDatabase db){
 	int currentMigration = 0;
 	for(Integer mVer : mVerMigrations.keySet()){
+	    migrate(mVerMigrations.get(mVer));
 	    updateVersionTable(db, mVer.intValue());
 	}
+    }
+
+    void migrate(ArrayList<Migration> ms){
+	for(Migration m : ms){
+	    m.setUp();
+	}
+    }
+
+    void rollback(ArrayList<Migration> ms){
     }
 
     private void updateVersionTable(SQLiteDatabase db, int nextVersion){
