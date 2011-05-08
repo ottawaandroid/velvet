@@ -16,6 +16,6 @@
     "adb shell am instrument -w ca.ottawaandroid.velvet.tests/android.test.InstrumentationTestRunner"
     -->
     <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="ca.ottawaandroid.velvet"
+                     android:targetPackage="ca.ottawaandroid.velvet.tests"
                      android:label="Tests for ca.ottawaandroid.velvet"/>
 </manifest>
