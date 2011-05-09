@@ -23,8 +23,20 @@ public class MigrationsTest extends DbTestCase {
 	    version(1);
 	    add( new CreateTable("table1", "c", "d", "e"));
 	}};
+	migrations.apply(mDb);
 
 	assertEquals(1, getDatabaseVersion());
+	assertEntryCount(0, "table1");
+    }
+
+    public void testAddVersionWithMigration(){
+	MigrationSet migrations = new MigrationSet(){{
+	    add(1, new CreateTable("table1", "c", "d", "e"));
+	}};
+	migrations.apply(mDb);
+
+	assertEquals(1, getDatabaseVersion());
+	assertEntryCount(0, "table1");
     }
 
     public int getDatabaseVersion(){
@@ -33,5 +45,18 @@ public class MigrationsTest extends DbTestCase {
 	int version = c.getInt(c.getColumnIndex("CURRENT_VERSION"));
 	c.close();
 	return version;
+    }
+
+    public Cursor getAllForTable(String tbl){
+	return mDb.query(tbl, null, null, null, null, null, null, null);
+    }
+
+    public void assertEntryCount(int count, String tbl){
+	Cursor c = getAllForTable(tbl);
+	try {
+	    assertEquals(count, c.getCount());
+	} finally {
+	    c.close();
+	}
     }
 }

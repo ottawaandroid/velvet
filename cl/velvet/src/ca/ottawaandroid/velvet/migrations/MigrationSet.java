@@ -26,22 +26,25 @@ public class MigrationSet {
     }
 
     public void add(Migration migration){
+	mVerMigrations.get(mVersion).add(migration);
     }
 
     public void add(int version, Migration migration){
+	version(version);
+	add(migration);
     }
 
     public void apply(SQLiteDatabase db){
 	int currentMigration = 0;
 	for(Integer mVer : mVerMigrations.keySet()){
-	    migrate(mVerMigrations.get(mVer));
+	    migrate(mVerMigrations.get(mVer), db);
 	    updateVersionTable(db, mVer.intValue());
 	}
     }
 
-    void migrate(ArrayList<Migration> ms){
+    void migrate(ArrayList<Migration> ms, SQLiteDatabase db){
 	for(Migration m : ms){
-	    m.setUp();
+	    m.setUp(db);
 	}
     }
 

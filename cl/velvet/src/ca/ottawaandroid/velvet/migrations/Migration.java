@@ -1,7 +1,9 @@
 package ca.ottawaandroid.velvet.migrations;
 
-public interface Migration {
-    public void setUp();
+import android.database.sqlite.SQLiteDatabase;
 
-    public void tearDown();
+public interface Migration {
+    public void setUp(SQLiteDatabase db);
+
+    public void tearDown(SQLiteDatabase db);
 }
