@@ -39,6 +39,32 @@ public class MigrationsTest extends DbTestCase {
 	assertEntryCount(0, "table1");
     }
 
+    public void testVersionMigrations(){
+	MigrationSet migrations = new MigrationSet(){{
+	    version(1);
+	    add( new CreateTable("table1", "c", "d", "e"));
+	    version(2);
+	    add(new CreateTable("table2", "f", "g"));
+	}};
+
+	migrations.apply(mDb, 0, 1);
+	assertEntryCount(0, "table1");
+	Cursor c = mDb.rawQuery("SELECT tbl_name FROM sqlite_master WHERE type='table' and tbl_name='table2'", null);
+	try {
+	    assertEquals(0, c.getCount());
+	} finally {
+	    c.close();
+	}
+
+	// Migrations should automatically where to continue
+	// from if there is an incomplete migration.
+	migrations.apply(mDb);
+	{
+	    assertEntryCount(0, "table1");
+	    assertEntryCount(0, "table2");
+	}
+    }
+
     public int getDatabaseVersion(){
 	Cursor c = mDb.query("DATABASE_VERSION", null, null, null, null, null, null, null);
 	c.moveToFirst();

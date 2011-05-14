@@ -5,10 +5,13 @@ import java.util.LinkedHashMap;
 
 import android.content.Context;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 public class MigrationSet {
     private static final String DATABASE_VERSION_SQL = "CREATE TABLE IF NOT EXISTS DATABASE_VERSION (ID INTEGER PRIMARY KEY, CURRENT_VERSION INTEGER)";
+    private static final String GET_VERSION_SQL = "SELECT CURRENT_VERSION FROM DATABASE_VERSION LIMIT 1";
     private static final String DATABASE_VERSION = "DATABASE_VERSION", ID = "ID", VERSION = "CURRENT_VERSION";
     
     private int mVersion = 0;
@@ -35,8 +38,18 @@ public class MigrationSet {
     }
 
     public void apply(SQLiteDatabase db){
-	int currentMigration = 0;
+	apply(db, getVersion(db), mVersion);
+    }
+
+    public void apply(SQLiteDatabase db, int startingFrom, int finishingAt){
+	int currentMigration = startingFrom;
 	for(Integer mVer : mVerMigrations.keySet()){
+	    if(mVer > finishingAt){
+		break;
+	    }
+	    if(mVer <= currentMigration) {
+		continue;
+	    }
 	    migrate(mVerMigrations.get(mVer), db);
 	    updateVersionTable(db, mVer.intValue());
 	}
@@ -57,5 +70,22 @@ public class MigrationSet {
 	cv.put(ID, 1);
 	cv.put(VERSION, nextVersion);
 	db.replace(DATABASE_VERSION, null, cv);
+    }
+
+    private int getVersion(SQLiteDatabase db){
+	int version;
+	Cursor c = null;
+	try {
+	    c = db.rawQuery(GET_VERSION_SQL, null);
+	    c.moveToFirst();
+	    version = c.getInt(c.getColumnIndex(VERSION));
+	} catch(SQLiteException e) {
+	    version = 0;
+	} finally {
+	    if( c != null ){
+		c.close();
+	    }
+	}
+	return version;
     }
 }
