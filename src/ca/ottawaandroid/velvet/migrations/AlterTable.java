@@ -1,14 +1,9 @@
 package ca.ottawaandroid.velvet.migrations;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
-import android.util.Log;
-import android.content.Context;
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 public class AlterTable implements Migration {
     private static final String ALTER_TABLE_SQL = "ALTER TABLE %s ";

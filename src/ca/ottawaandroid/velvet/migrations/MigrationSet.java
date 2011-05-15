@@ -3,7 +3,6 @@ package ca.ottawaandroid.velvet.migrations;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import android.content.Context;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

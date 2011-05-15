@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class CreateTable implements Migration {
     private static final String CREATE_TABLE_SQL = "CREATE TABLE %s ( %s )";
-    private static final String DROP_TABLE_SQL = "DROP TABLE IF EXISTS %s";
     private static final String COLUMN_STRING = "%s TEXT";
 
     private String mTbl;
