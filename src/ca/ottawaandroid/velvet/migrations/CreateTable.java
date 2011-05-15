@@ -10,8 +10,8 @@ public class CreateTable implements Migration {
     private static final String DROP_TABLE_SQL = "DROP TABLE IF EXISTS %s";
     private static final String COLUMN_STRING = "%s TEXT";
 
-    String mTbl;
-    ArrayList<String> mCols = new ArrayList<String>();
+    private String mTbl;
+    private ArrayList<String> mCols = new ArrayList<String>();
 
     public CreateTable(String tbl, String... cols){
 	mTbl = tbl;

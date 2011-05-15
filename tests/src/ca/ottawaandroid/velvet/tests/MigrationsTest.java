@@ -2,9 +2,11 @@ package ca.ottawaandroid.velvet.test;
 
 import ca.ottawaandroid.velvet.migrations.MigrationSet;
 import ca.ottawaandroid.velvet.migrations.CreateTable;
+import ca.ottawaandroid.velvet.migrations.AlterTable;
 import android.database.Cursor;
 
 public class MigrationsTest extends DbTestCase {
+    
     public void setUp() throws Exception {
 	super.setUp();
     }
@@ -65,6 +67,26 @@ public class MigrationsTest extends DbTestCase {
 	}
     }
 
+    public void testAlterTable(){
+	MigrationSet migrations = new MigrationSet(){{
+	    version(1);
+	    add( new CreateTable("table1", "c", "d", "e") );
+	    version(2);
+	    add( 
+		new AlterTable("table1")
+		{{
+		    addColumn("f");
+		}});
+	}};
+	migrations.apply(mDb);
+	{
+	    // Table alterations add extra spaces to the generated schema SQL, which
+	    // explains why 'f' has extra spaces.
+	    String expected = "CREATE TABLE table1 ( c TEXT,d TEXT,e TEXT , f TEXT)";
+	    assertExpectedSQL(expected, "table1");
+	}
+    }
+
     public int getDatabaseVersion(){
 	Cursor c = mDb.query("DATABASE_VERSION", null, null, null, null, null, null, null);
 	c.moveToFirst();
@@ -77,6 +99,13 @@ public class MigrationsTest extends DbTestCase {
 	return mDb.query(tbl, null, null, null, null, null, null, null);
     }
 
+    public Cursor getTableSchema(String tbl){
+	return mDb.rawQuery(
+			    "SELECT sql FROM sqlite_master WHERE tbl_name=?",
+			    new String[] { tbl }
+			    );
+    }
+
     public void assertEntryCount(int count, String tbl){
 	Cursor c = getAllForTable(tbl);
 	try {
@@ -84,5 +113,17 @@ public class MigrationsTest extends DbTestCase {
 	} finally {
 	    c.close();
 	}
+    }
+
+    public void assertExpectedSQL(String expected, String tbl){
+	Cursor c = getTableSchema(tbl);
+	String tblSchema = "";
+	try {
+	    c.moveToFirst();
+	    tblSchema = c.getString(c.getColumnIndex("sql"));
+	} finally {
+	    c.close();
+	}
+	assertEquals(expected, tblSchema);
     }
 }
