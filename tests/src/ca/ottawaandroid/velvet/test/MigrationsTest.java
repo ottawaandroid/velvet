@@ -3,12 +3,17 @@ package ca.ottawaandroid.velvet.test;
 import ca.ottawaandroid.velvet.migrations.MigrationSet;
 import ca.ottawaandroid.velvet.migrations.CreateTable;
 import ca.ottawaandroid.velvet.migrations.AlterTable;
+import ca.ottawaandroid.velvet.migrations.DropTable;
 import android.database.Cursor;
 
 public class MigrationsTest extends DbTestCase {
     
     public void setUp() throws Exception {
 	super.setUp();
+    }
+
+    public void tearDown() throws Exception {
+	super.tearDown();
     }
 
     public void testApplyVersion() {
@@ -86,6 +91,33 @@ public class MigrationsTest extends DbTestCase {
 	    assertExpectedSQL(expected, "table1");
 	}
     }
+
+    public void testDropTable(){
+	MigrationSet migrations = new MigrationSet(){{
+	    version(1);
+	    add(new CreateTable("table1", "c", "d", "e"));
+	    version(2);
+	    add(new DropTable("table1"));
+	}};
+	migrations.apply(mDb, 0, 1);
+
+	Cursor c= mDb.rawQuery("SELECT tbl_name FROM sqlite_master WHERE type='table' and tbl_name='table1'", null);
+	try{
+	    assertEquals(1, c.getCount());
+	} finally {
+	    c.close();
+	}
+
+	migrations.apply(mDb, 1, 2);
+	Cursor d= mDb.rawQuery("SELECT tbl_name FROM sqlite_master WHERE type='table' and tbl_name='table1'", null);
+	try{
+	    assertEquals(0, c.getCount());
+	} finally {
+	    d.close();
+	}
+    }
+
+    // Helpers
 
     public int getDatabaseVersion(){
 	Cursor c = mDb.query("DATABASE_VERSION", null, null, null, null, null, null, null);
