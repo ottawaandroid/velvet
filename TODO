@@ -1,0 +1,7 @@
+# MIGRATIONS #
+* There was/is a bug in how the table version is updated.  This might
+have been fixed using the INSERT OR REPLACE query, though it needs to
+be tested
+* Rollbacks/Teardowns of migrations
+
+# QUERIES #

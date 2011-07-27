@@ -111,7 +111,7 @@ public class MigrationsTest extends DbTestCase {
 	migrations.apply(mDb, 1, 2);
 	Cursor d= mDb.rawQuery("SELECT tbl_name FROM sqlite_master WHERE type='table' and tbl_name='table1'", null);
 	try{
-	    assertEquals(0, c.getCount());
+	    assertEquals(0, d.getCount());
 	} finally {
 	    d.close();
 	}

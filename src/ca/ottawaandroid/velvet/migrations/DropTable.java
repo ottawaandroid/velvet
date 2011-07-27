@@ -13,6 +13,9 @@ public class DropTable implements Migration {
     }
 
     public void setUp(SQLiteDatabase db){
+	String sql = String.format(DROP_TABLE_SQL, mTbl);
+	Log.d("Migration->DropTable#setUp", sql);
+	db.execSQL(sql);
     }
 
     public void tearDown(SQLiteDatabase db){

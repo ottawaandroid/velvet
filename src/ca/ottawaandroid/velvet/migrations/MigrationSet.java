@@ -7,11 +7,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 public class MigrationSet {
     private static final String DATABASE_VERSION_SQL = "CREATE TABLE IF NOT EXISTS DATABASE_VERSION (ID INTEGER PRIMARY KEY, CURRENT_VERSION INTEGER)";
     private static final String GET_VERSION_SQL = "SELECT CURRENT_VERSION FROM DATABASE_VERSION LIMIT 1";
     private static final String DATABASE_VERSION = "DATABASE_VERSION", ID = "ID", VERSION = "CURRENT_VERSION";
+    private static final String UPDATE_VERSION_SQL = "INSERT OR REPLACE INTO DATABASE_VERSION (ID, CURRENT_VERSION) VALUES (%d, %d)";
     
     private int mVersion = 0;
     private LinkedHashMap<Integer, ArrayList<Migration>> mVerMigrations;
@@ -65,10 +67,7 @@ public class MigrationSet {
 
     private void updateVersionTable(SQLiteDatabase db, int nextVersion){
 	db.execSQL(DATABASE_VERSION_SQL);
-	ContentValues cv = new ContentValues();
-	cv.put(ID, 1);
-	cv.put(VERSION, nextVersion);
-	db.replace(DATABASE_VERSION, null, cv);
+	db.execSQL(String.format(UPDATE_VERSION_SQL, 1, nextVersion));
     }
 
     private int getVersion(SQLiteDatabase db){
